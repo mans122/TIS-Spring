@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.zerock.domain.BoardVO;
 
+
 public interface BoardService {
 	//등록
 	public void register(BoardVO board);
