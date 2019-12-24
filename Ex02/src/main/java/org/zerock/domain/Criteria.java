@@ -4,15 +4,12 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-
 @ToString
 @Setter
 @Getter
 public class Criteria {
-
   private int pageNum;
   private int amount;
-  
   private String type;
   private String keyword;
 
@@ -25,8 +22,7 @@ public class Criteria {
     this.amount = amount;
   }
   
-  public String[] getTypeArr() {
-    
+  public String[] getTypeArr() {   
     return type == null? new String[] {}: type.split("");
   }
 }

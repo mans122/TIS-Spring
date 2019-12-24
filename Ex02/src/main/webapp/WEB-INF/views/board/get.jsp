@@ -16,7 +16,7 @@
           <!-- DataTales Example -->
           <div class="card shadow mb-4">
             <div class="card-header py-3">
-              <h4 class="m-0 font-weight-bold text-primary">Read</h4>
+              <h4 class="m-0 font-weight-bold text-primary">Modify</h4>
               
             </div>
            
@@ -26,11 +26,11 @@
               	</div>
             
               	<div class="form-group">
-              		<label>Title</label> <input class="form-control" name='title' readonly value="${board.title }">
+              		<label>Title</label> <input class="form-control" name='title' value="${board.title }">
               	</div>
               	
               	<div class="form-group">
-              		<label>Content</label> <textarea class="form-control" rows="10" name='content' readonly>${board.content }</textarea>
+              		<label>Content</label> <textarea class="form-control" rows="10" name='content' >${board.content }</textarea>
               	</div>
               	
               	<div class="form-group">
