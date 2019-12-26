@@ -57,9 +57,9 @@
 						readonly>
 				</div>
 
-				<button type="submit" data-oper='modify' class="btn btn-outline-primary">Modify</button>
-				<button type="submit" data-oper='remove' class="btn btn-outline-danger">Remove</button>
-				<button type="submit" data-oper='list' class="btn btn-outline-info">List</button>
+				<button type="submit" data-oper='modify' class="btn btn-outline-primary btn-sm">Modify</button>
+				<button type="submit" data-oper='remove' class="btn btn-outline-danger btn-sm">Remove</button>
+				<button type="submit" data-oper='list' class="btn btn-outline-info btn-sm">List</button>
 			</div>
 
 		</div>

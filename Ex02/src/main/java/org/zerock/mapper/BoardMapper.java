@@ -7,7 +7,7 @@ import org.zerock.domain.Criteria;
 
 public interface BoardMapper {
 	//조회
-	public List<BoardVO> getList();
+	//public List<BoardVO> getList();
 	
 	//페이징 목록
 	public List<BoardVO> getListWithPaging(Criteria cri);
@@ -27,5 +27,6 @@ public interface BoardMapper {
 	//업뎃
 	public int update(BoardVO board);
 	
-	
+	//전체 레코드 수 
+	public int getTotalCount(Criteria cri);
 }

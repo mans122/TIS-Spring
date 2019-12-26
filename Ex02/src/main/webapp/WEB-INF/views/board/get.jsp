@@ -36,10 +36,21 @@
               	<div class="form-group">
               		<label>Writer</label> <input class="form-control" name='writer' readonly value="${board.writer }">
               	</div>
-              	
+
+				<form id='operForm' action="/board/modify" method="get">
+					<input type="hidden" name="bno" value="${board.bno}">	
+					<input type="hidden" name="pageNum"	value='<c:out value="${cri.pageNum}"/>'> 
+					<input type="hidden" name="amount" value='<c:out value="${cri.amount}"/>'>
+					<input type="hidden" name="type" value='<c:out value="${cri.type}"/>'>
+					<input type="hidden" name="keyword" value='<c:out value="${cri.keyword}"/>'>
+					
+					<button class="btn btn-outline-primary btn-sm">Modify</button>
+				</form>
+				              	
               	<button data-oper='modify' class="btn btn-outline-primary btn-sm" onclick="location.href='/board/modify?bno=<c:out value="${board.bno}"/>'">
               	Modify
               	</button>
+              	<button data-oper='remove' class="btn btn-outline-danger btn-sm" id="remove">Remove</button>
               	<button data-oper='list' class="btn btn-outline-primary btn-sm"
               	onclick="location.href='/board/list'">List</button>
             </div>
@@ -51,3 +62,17 @@
       
       
 <%@include file="../includes/footer.jsp" %>
+<script>
+$(document).ready(function(){
+	$("#remove").click(function(){
+		var result = confirm("정말 삭제하시겠습니까?");
+		if(result){
+			 var form = $('<form action="/board/remove" method="post">' + '<input type="hidden" name="bno" value="'+${board.bno}+ '"></input>'+'</form>');
+			 $('body').append(form);
+			 $(form).submit();
+		}else{
+			return;
+		}
+	});
+});
+</script>
