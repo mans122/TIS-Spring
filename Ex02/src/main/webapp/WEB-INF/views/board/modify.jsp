@@ -19,49 +19,36 @@
 		<div class="card shadow mb-4">
 			<div class="card-header py-3">
 				<h4 class="m-0 font-weight-bold text-primary">Modify</h4>
-
 			</div>
+			
+			<input type="hidden" name="pageNum"	value="${cri.pageNum}"> 
+			<input type="hidden" name="amount" value="${cri.amount}">
+			<input type="hidden" name="type" value="${cri.type}">
+			<input type="hidden" name="keyword" value="${cri.keyword}">
 
 			<div class="card-body">
-
 				<div class="form-group">
-					<label>Bno</label> <input class="form-control" name='bno'
-						readonly value="${board.bno}">
+					<label>Bno</label> <input class="form-control" name='bno'readonly value="${board.bno}">
 				</div>
-
 				<div class="form-group">
-					<label>Title</label> <input class="form-control" name='title'
-						value="${board.title }">
+					<label>Title</label> <input class="form-control" name='title'	value="${board.title }">
 				</div>
-
 				<div class="form-group">
-					<label>Content</label>
-					<textarea class="form-control" rows="10" name='content'>${board.content }</textarea>
+					<label>Content</label><textarea class="form-control" rows="10" name='content'>${board.content }</textarea>
 				</div>
-
 				<div class="form-group">
-					<label>Writer</label> <input class="form-control" name='writer'
-						readonly value="${board.writer }">
+					<label>Writer</label> <input class="form-control" name='writer'	readonly value="${board.writer }">
 				</div>
-
 				<div class="form-group">
-					<label>RegDate</label> <input class="form-control" name='regdate'
-						value='<fmt:formatDate pattern="yyyy/MM/dd" value="${board.regdate}"/>'
-						readonly>
+					<label>RegDate</label> <input class="form-control" name='regdate' value='<fmt:formatDate pattern="yyyy/MM/dd" value="${board.regdate}"/>' readonly>
 				</div>
-
 				<div class="form-group">
-					<label>Update Date</label> <input class="form-control"
-						name='updateDate'
-						value='<fmt:formatDate pattern="yyyy/MM/dd" value="${board.updateDate}"/>'
-						readonly>
+					<label>Update Date</label> <input class="form-control"	name='updateDate' value='<fmt:formatDate pattern="yyyy/MM/dd" value="${board.updateDate}"/>' readonly>
 				</div>
-
 				<button type="submit" data-oper='modify' class="btn btn-outline-primary btn-sm">Modify</button>
 				<button type="submit" data-oper='remove' class="btn btn-outline-danger btn-sm">Remove</button>
 				<button type="submit" data-oper='list' class="btn btn-outline-info btn-sm">List</button>
 			</div>
-
 		</div>
 	</form>
 </div>
@@ -86,12 +73,25 @@
 				    return;
 				}
 				
-			}else if(operation==='list'){
+			}else if(operation === 'list'){
 				//리스트로 이동
-				self.location="/board/list";
-				return;
+				formObj.attr("action","/board/list").attr("method","get");
+				
+				var pageNumTag=$("input[name='pageNum']").clone();
+				var amountTag=$("input[name='amount']").clone();
+				var typeTag=$("input[name='type']").clone();
+				var keywordTag=$("input[name='keyword']").clone();
+				
+				formObj.empty();
+				
+				formObj.append(pageNumTag);
+				formObj.append(amountTag);
+				formObj.append(typeTag);
+				formObj.append(keywordTag);
 			}
 			formObj.submit();
 		});
+		
+		
 	});
 </script>

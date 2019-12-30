@@ -35,17 +35,8 @@
                   
                   <c:forEach items="${list}" var="board">
                   	<tr>
-                  		<td>
-                  			<a href='/board/get?bno=<c:out value="${board.bno}"/>'>
-                  				<c:out value="${board.bno}"/>
-                  			</a>
-                  		</td>
-                  		
-                  		<td>
-                  			<a href='/board/get?bno=<c:out value="${board.bno}"/>'>
-                  				<c:out value="${board.title}"/>
-                  			</a>
-                  		</td>
+                  		<td><c:out value="${board.bno}"/></td>
+                  		<td><a class="move" href='<c:out value="${board.bno}"/>'>	<c:out value="${board.title}"/></a></td>
                   		<td><c:out value="${board.writer}"/></td>
                   		<td><fmt:formatDate pattern="yyyy-MM-dd" value="${board.regdate}"/></td>
                   		<td><fmt:formatDate pattern="yyyy-MM-dd" value="${board.updateDate}"/></td>
@@ -142,7 +133,8 @@
 	        $("#page-top").addClass("sidebar-toggled");
 	        $("#accordionSidebar").addClass("toggled");
 	      }
-	      var result = '<c:out value="${result}"/>';
+	      
+	     var result = '<c:out value="${result}"/>';
 		checkModal(result);
 		
 		function checkModal(result){
@@ -165,8 +157,8 @@
 			self.location="/board/register";
 		});
 		
+		/* actionForm */
 		var actionForm = $("#actionForm");
-		
 		$(".page-link").on("click",function(e){
 			e.preventDefault();
 			console.log('click');
@@ -174,6 +166,14 @@
 			actionForm.submit();
 		});
 		
+		$(".move").on("click",function(e){
+			e.preventDefault();
+			actionForm.append("<input type='hidden' name='bno' value='"+$(this).attr("href")+"'>");
+			actionForm.attr("action","/board/get");
+			actionForm.submit();
+		});
+		
+		/* serachForm */
 		var searchForm = $("#searchForm");
 		$("#searchForm button").on("click",function(e){
 			e.preventDefault();
@@ -189,5 +189,7 @@
 			searchForm.find("input[name='pageNum']").val("1");
 			searchForm.submit();
 		});
+		
+
 	});
 </script>
