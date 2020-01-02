@@ -2,6 +2,9 @@ package org.zerock.controller;
 
 
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -36,9 +39,7 @@ public class BoardController {
 	@GetMapping("/list")
 	public void list(Criteria cri, Model model) {
 		model.addAttribute("list",service.getList(cri));
-		//model.addAttribute("pageMaker",new PageDTO(cri,123));
 		int total=service.getTotal(cri);
-		log.info("total :"+total);
 		model.addAttribute("pageMaker",new PageDTO(cri,total));
 	}
 	
@@ -88,6 +89,8 @@ public class BoardController {
 		rttr.addAttribute("keyword", cri.getKeyword());
 		return "redirect:/board/list";
 	}
+	
+
 
 	//Lincoln
 	@GetMapping("/lincoln")

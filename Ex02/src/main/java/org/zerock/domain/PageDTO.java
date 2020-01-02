@@ -15,7 +15,6 @@ public class PageDTO {
   private Criteria cri; // Criteria 객체
 
   public PageDTO(Criteria cri, int total) {
-
     this.cri = cri;
     this.total = total;
     this.endPage = (int) (Math.ceil(cri.getPageNum() / 10.0)) * 10;

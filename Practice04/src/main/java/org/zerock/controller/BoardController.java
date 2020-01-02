@@ -2,10 +2,14 @@ package org.zerock.controller;
 
 
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -19,7 +23,7 @@ import lombok.extern.log4j.Log4j;
 
 @Controller
 @Log4j
-@RequestMapping("/controller/board/*")
+@RequestMapping("/board/*")
 @AllArgsConstructor
 public class BoardController {
 	
@@ -32,6 +36,7 @@ public class BoardController {
 //		model.addAttribute("list",service.);
 //	}
 	
+	//레코드 수
 	@GetMapping("/list")
 	public void list(Criteria cri, Model model) {
 		model.addAttribute("list",service.getList(cri));
@@ -40,9 +45,7 @@ public class BoardController {
 		log.info("total :"+total);
 		model.addAttribute("pageMaker",new PageDTO(cri,total));
 	}
-	
-	//레코드 수 
-	
+	 
 	
 	//글쓰기 화면
 	@GetMapping("/register")
@@ -87,7 +90,19 @@ public class BoardController {
 		}
 		return "redirect:/board/list";
 	}
-
+	
+	//비번 체크
+	@PostMapping(value ="/pwdCheck",
+			consumes = "application/json",
+			produces = {MediaType.TEXT_PLAIN_VALUE})
+	public ResponseEntity<String> pwdCheck(@RequestBody BoardVO vo){
+		System.out.println("========================"+vo.getBno()+"/"+vo.getPwd());
+		int insertCount = service.pwdCheck(vo);
+		return insertCount==1
+				? new ResponseEntity<>("success",HttpStatus.OK)
+//				: new ResponseEntity<>("fail",HttpStatus.INTERNAL_SERVER_ERROR);
+				: new ResponseEntity<>("fail",HttpStatus.OK);
+	}
 	//Lincoln
 	@GetMapping("/lincoln")
 	public void lincoln() {	}

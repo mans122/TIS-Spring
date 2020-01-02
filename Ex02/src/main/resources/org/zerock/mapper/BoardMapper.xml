@@ -14,8 +14,8 @@
 
 	<select id="getListWithPaging"	resultType="org.zerock.domain.BoardVO">
 		<![CDATA[
-		select bno, title, writer, regdate, updatedate from
-		(select /*+INDEX_DESC(tbl_board pk_board) */ rownum rn, bno, title, content, writer, regdate, updatedate from tbl_board where 
+		select bno, title, writer, regdate, updatedate, replycnt from
+		(select /*+INDEX_DESC(tbl_board pk_board) */ rownum rn, bno, title, content, writer, regdate, updatedate, replycnt from tbl_board where 
 		]]>
 		
 		<trim prefix="(" suffix=") AND " prefixOverrides="OR">
@@ -41,9 +41,7 @@
 		where	rn > (#{pageNum}-1) * #{amount}
 		]]>
 	</select>
-	
 
-	
 	<insert id="insert">
 		insert into tbl_board (bno,title,content,writer)
 		values(seq_board.nextval, #{title}, #{content}, #{writer})
@@ -97,4 +95,8 @@
 		bno >0
 		
 	</select>
+	
+	<update id="updateReplyCnt">
+		update tbl_board set replycnt = replycnt + #{amount} where bno = #{bno}
+	</update>
 </mapper>

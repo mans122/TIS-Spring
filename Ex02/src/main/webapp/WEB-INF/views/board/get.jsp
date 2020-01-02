@@ -75,8 +75,12 @@
 
 		</ul>
 	</div>
+	<div class="card-footer">
 </div>
 <!-- 댓글 끝 -->
+
+<!-- 댓글 페이징  ---------------------------------------------------------------------->
+<!-- 댓글 페이징 끝 -->
 
 <!-- Reply Modal ------------------------------------------------>
 <div class="modal fade" id="myModal" tabindex="-1" role="dialog"
@@ -131,6 +135,52 @@
 <script src="/resources/js/reply.js"></script>
 <script>
 	$(document).ready(function() {
+		var pageNum=1;
+		var replyPageFooter = $(".card-footer");
+		// 댓글 페이징 시작
+		function showReplyPage(replyCnt){
+			var endNum = Math.ceil(pageNum/10.0)*10;
+			var startNum = endNum - 9;
+			var prev = startNum !=1;
+			var next = false;
+			
+			if(endNum * 10 >= replyCnt){
+				endNum = Math.ceil(replyCnt/10.0);
+			}
+			if(endNum * 10 < replyCnt){
+				next = true;
+			}
+			
+			var str = "<ul class='pagination float-right'>";
+			if(prev){
+				str +="  <li class='page-item'>";
+				str +="     <a class='page-link' href='"+(startNum - 1)+"'>Previous</a>";
+				str +="  </li>";
+			}
+			
+			for(var i = startNum; i <endNum; i++){
+				var active = pagenum == i ?"active":"";
+				str +="  <li class='page-item "+active+" '>";
+				str +="     <a class='page-link' href='"+i+"'>"+i+"</a>";
+				str +="  </li>";
+			}
+			
+			if(next){
+				str +="  <li class='page=item'>";
+				str +="     <a class='page-link' href='"+(endNum + 1)+"'>Next</a>";
+				str +="  </li>";
+			}
+				str +="<ul></div>";
+				replyPageFooter.html(str);
+		}
+		
+		//댓글 페이징번호 이벤트처리
+		replyPageFooter.on("click","li a",function(e){
+			e.preventDefault();
+			var targetPageNum = $(this).attr("href");
+			pageNum=targetPageNum;
+			showList(pageNum);
+		})
 		
 		/* reply */
 		var bnoValue = '<c:out value="${board.bno}"/>';
@@ -139,7 +189,12 @@
 		showList(1);
 		
 		function showList(page) {	
-			replyService.getList({bno:bnoValue, page:page || 1},function(list){
+			replyService.getList({bno:bnoValue, page:page || 1},function(replyCnt,list){
+				if(page== -1){
+					pageNum= Math.ceil(replyCnt/10.0);
+					showList(pageNum);
+					return;
+				}
 				var str="";
 				if(list == null || list.length == 0){
 					replyUL.html("");
@@ -157,6 +212,7 @@
 					str +="</li>";
 				}
 				replyUL.html(str);
+				showReplyPage(replyCnt);
 			}); //end function
 		} //end showList
 		//reply 끝
@@ -170,15 +226,62 @@
 		var modalRemoveBtn = $("#modalRemoveBtn");
 		var modalRegisterBtn = $("#modalRegisterBtn");
 		
+		//댓글 클릭 이벤트 처리
+		$(".chat").on("click","li",function(e){
+			var rno=$(this).data("rno");
+			$("#myModalLabel").html(rno+"번 댓글");
+			replyService.get(rno, function(reply){
+				modalInputReply.val(reply.reply);
+				modalInputReplyer.val(reply.replyer).attr("readonly","readonly");
+				modalInputReplyDate.val(replyService.displayTime(reply.replyDate)).attr("readonly","readonly");
+				modal.data("rno",reply.rno);
+				
+				modal.find("button[id!='modalCloseBtn']").hide();
+				modalModBtn.show();
+				modalRemoveBtn.show();
+				$("#myModal").modal("show");
+			})
+		});
+		
+		//댓글 수정 버튼 처리
+		modalModBtn.on("click",function(e){
+			var reply = {rno:modal.data("rno"), reply:modalInputReply.val()};
+			
+			replyService.update(reply,function(result){
+				alert(result);
+				modal.modal("hide");
+				showList(pageNum);
+			});
+		});
+		
+		//댓글 삭제버튼
+		modalRemoveBtn.on("click",function(e){
+			var rno = modal.data("rno");
+			var result = confirm("정말 삭제하시겠습니까?");
+			if(result){
+				replyService.remove(rno, function(result){
+					alert(result);
+					modal.modal("hide");
+					showList(pageNum);
+				});
+			}else{
+				return;
+			}
+		});
+		
 		// 댓글추가 버튼 
 		$("#addReplyBtn").on("click", function(e) {
 			modal.find("input").val("");
 			modalInputReplyDate.closest("div").hide();
 			modal.find("button[id !='modalCloseBtn']").hide();
-			
+			modalInputReplyer.removeAttr("readonly");
 			modalRegisterBtn.show();
 			$("#myModal").modal("show");
+			
 		});
+		
+		
+		
 		//Register 버튼 클릭
 		modalRegisterBtn.on("click",function(e){
 			var reply={
@@ -190,6 +293,7 @@
 				alert(result);
 				modal.find("input").val("");
 				modal.modal("hide");
+				showList(1);
 			});
 		});
 		// Close 버튼 
@@ -223,6 +327,9 @@
 		operForm.attr("action","/board/list");
 		operForm.submit();
 	});
+	
+	
+	
 });
 </script>
 

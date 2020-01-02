@@ -10,8 +10,15 @@
         <div class="container-fluid">
 
           <!-- Page Heading -->
-          <h1 class="h3 mb-2 text-gray-800">Board</h1>
-          
+	          <h1 class="h3 mb-2 text-gray-800">Board
+		          <select class="btn btn-outline-secondary float-right" id="lookCount">
+					  <option value="10" <c:out value="${pageMaker.cri.amount eq'10'?'selected':''}"/>>10개씩 보기</option>
+					  <option value="20" <c:out value="${pageMaker.cri.amount eq'20'?'selected':''}"/>>20개씩 보기</option>
+					  <option value="50" <c:out value="${pageMaker.cri.amount eq'50'?'selected':''}"/>>50개씩 보기</option>
+					  <option value="100" <c:out value="${pageMaker.cri.amount eq'100'?'selected':''}"/>>100개씩 보기</option>
+					</select>
+				</h1>
+                              
 
           <!-- DataTales Example -->
           <div class="card shadow mb-4">
@@ -36,7 +43,14 @@
                   <c:forEach items="${list}" var="board">
                   	<tr>
                   		<td><c:out value="${board.bno}"/></td>
-                  		<td><a class="move" href='<c:out value="${board.bno}"/>'>	<c:out value="${board.title}"/></a></td>
+                  		<td><a class="move" href='<c:out value="${board.bno}"/>'>
+                  		<c:out value="${board.title}"/>
+                  		<c:if test="${board.replyCnt >0}">
+                  			<b class="badge badge-primary" style="line-height:15px; align-vertical:middle;">
+                  			<c:out value="${board.replyCnt}"/>                   		
+                  			</b>
+                  		</c:if>
+                 		</a></td>
                   		<td><c:out value="${board.writer}"/></td>
                   		<td><fmt:formatDate pattern="yyyy-MM-dd" value="${board.regdate}"/></td>
                   		<td><fmt:formatDate pattern="yyyy-MM-dd" value="${board.updateDate}"/></td>
@@ -128,6 +142,17 @@
 <%@include file="../includes/footer.jsp" %>
 <script>
 	$(document).ready(function(){
+		//페이지당 보여줄 글 개수
+		$("#lookCount").change(function(){
+			var lookCnt = this.value;
+			$("#actionForm").find("input[name='amount']").val(lookCnt);
+			$("#actionForm").submit();
+			//$("#searchForm").find("input[name='amount']").val(lookCnt);
+			//$("#searchForm").submit();
+		})
+		
+		
+		//----------------------------------
 		 var width = $(document).width();
 	      if(width<768){
 	        $("#page-top").addClass("sidebar-toggled");
