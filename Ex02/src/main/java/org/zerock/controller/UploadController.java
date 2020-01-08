@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.file.Files;
 import java.text.SimpleDateFormat;
@@ -152,7 +153,7 @@ public class UploadController {
 	      return result;
 	   }
 	   
-	   
+	   // 다운로드
 	   @GetMapping(value ="/download",produces=MediaType.APPLICATION_OCTET_STREAM_VALUE)
 	   @ResponseBody
 	   public ResponseEntity<Resource> downloadFile(@RequestHeader("User-Agent") String userAgent,String fileName){
@@ -172,19 +173,40 @@ public class UploadController {
 			   String downloadName = null;
 			   if(userAgent.contains("Trident")) {
 				   //IE Browser
-				   downloadName = URLEncoder.encode(resourceName,"UTF-8").replaceAll("\\+"," ");
+				   downloadName = URLEncoder.encode(resourceOriginalName,"UTF-8").replaceAll("\\+", " ");
 			   }else if(userAgent.contains("Edge")) {
 				   //Edge Browser
-				   downloadName = URLEncoder.encode(resourceName,"UTF-8");
+				   downloadName = URLEncoder.encode(resourceOriginalName,"UTF-8");
 			   }else {
 				   //Another Browser
-				   downloadName = new String(resourceName.getBytes("UTF-8"),"ISO-8859-1");
+				   downloadName = new String(resourceOriginalName.getBytes("UTF-8"),"ISO-8859-1");
 			   }
 			   headers.add("Content-Disposition", "attachment; filename="+downloadName);
 		   }catch(UnsupportedEncodingException e) {
 			   e.printStackTrace();
 		   }
 		   return new ResponseEntity<Resource>(resource, headers, HttpStatus.OK);
+	   }
+	   
+	   // 삭제
+	   @PostMapping("/deleteFile")
+	   @ResponseBody
+	   public ResponseEntity<String> deleteFile(String fileName, String type){
+		   File file;
+		   try {
+			   file = new File("c:\\upload\\"+URLDecoder.decode(fileName,"UTF-8"));
+			   file.delete();
+			   
+			   if(type.equals("image")) {
+				   String largeFileName = file.getAbsolutePath().replace("s_", "");
+				   file=new File(largeFileName);
+				   file.delete();
+			   }
+		   }catch(UnsupportedEncodingException e) {
+			   e.printStackTrace();
+			   return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		   }
+		   return new ResponseEntity<String>("deleted",HttpStatus.OK);
 	   }
 	   
 }

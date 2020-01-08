@@ -5,7 +5,45 @@
 
 <%@include file="../includes/header.jsp"%>
 
+<style>
+.uploadResult{ 	width:100%;
+				background-color: gray;}
+.uploadResult ul{	display : flex;
+					flex-flow : row;
+					justify-content: center;
+					align-items: center;}
+.uploadResult ul li{
+					list-style: none;
+					padding:10px;}
+.uploadResult ul li img{width:100px;}
 
+.uploadResult ul li span{color:white;}
+.bigPictureWrapper {
+position : absolute;
+display:none;
+justify-content:center;
+align-items: center;
+top: 0%;
+width: 100%;
+height: 100%;
+background-color: gray !important;
+z-index: 100;
+background:rgba(255,255,255,0.5);
+}
+.bigPicture{
+position: relative;
+display:flex;
+justify-content: center;
+align-items:center;
+}		
+.bigPicture img{
+width:1000px;
+}
+</style>
+
+<div class='bigPictureWrapper'>
+	<div class='bigPicture'></div>
+</div>
 <!-- Begin Page Content -->
 <div class="container-fluid">
 
@@ -49,6 +87,35 @@
 					value='<c:out value="${cri.type}"/>'> <input type="hidden"
 					name="keyword" value='<c:out value="${cri.keyword}"/>'>
 
+
+				<!-- 첨부 파일 ------------------------------------------------------>
+				<div class="row">
+					<div class="col-lg-12">
+						<div class="card shadow mb-4">
+							<div class="card-header py-3">
+								<h5 class="m-0 font-weight-bold text-primary">File Attach</h5>
+							</div>
+							<div class="card-body">
+								<div class="form-group uploadDiv"></div>
+								<div class="uploadResult">
+									<ul>
+									</ul>
+								</div>
+								<!-- <div class='bigPictureWrapper'>
+									<div class='bigPicture'></div>
+								</div> -->
+							</div>
+							<!-- End card body  -->
+						</div>
+						<!-- End card -->
+					</div>
+					<!-- End col-lg-12 -->
+				</div>
+				<!-- End board attach -->
+
+
+
+
 				<button data-oper='modify' class="btn btn-outline-primary btn-sm">Modify</button>
 				<button data-oper='list' class="btn btn-outline-primary btn-sm">List</button>
 			</form>
@@ -76,6 +143,7 @@
 		</ul>
 	</div>
 	<div class="card-footer">
+	</div>
 </div>
 <!-- 댓글 끝 -->
 
@@ -135,6 +203,79 @@
 <script src="/resources/js/reply.js"></script>
 <script>
 	$(document).ready(function() {
+		// 첨부파일 클릭 이벤트 처리
+		$(".uploadResult").on("click","li",function(){
+			console.log("view image");
+			var liObj = $(this);
+			var path = encodeURIComponent(liObj.data("path")+"/"+liObj.data("uuid")+"_"+liObj.data("filename"));
+			if(liObj.data("type")){
+				showImage(path.replace(new RegExp(/\\/g),"/"));
+			}else{
+				//download
+				self.location = "/download?fileName="+path;
+			}
+		});
+		function showImage(fileCallPath){
+			console.log(fileCallPath);
+			$(".bigPictureWrapper").css("display","flex").css("position","fix").css("top","0px").css("left","0px").show();
+			$(".bigPicture").html("<img src='/display?fileName="+fileCallPath+"'>").animate({width:'100%',height:'100%'},1000);
+			$(".navbar-nav").hide();
+			$(".container-fluid").hide();
+		};
+		
+		$(".bigPictureWrapper").on("click",function(e){
+			$(".bigPiture").animate({width:'0%',height:'0%'},1000);
+			setTimeout(function(){
+				$('.bigPictureWrapper').hide();
+				$(".navbar-nav").show();
+				$(".container-fluid").show();
+			},1000);
+		});
+		// 첨부파일 클릭 이벤트 끝
+		
+		// 첨부파일 목록 
+		(function(){
+			var bno = '<c:out value="${board.bno}"/>';
+			$.getJSON("/board/getAttachList",{bno:bno},function(arr){
+				console.log(arr);
+				var str = "";
+				$(arr).each(function(i,attach){
+					// Image type
+					if(attach.fileType){
+						var fileCallPath=encodeURIComponent(attach.uploadPath+"/s_"+attach.uuid+"_"+attach.fileName);
+		               	//var originPath = attach.uploadPath+ "\\"+attach.uuid+"_"+attach.fileName;
+		               	//originPath = originPath.replace(new RegExp(/\\/g),"/");
+		               
+		               	str+="<li style='cursor:pointer; margin-right:10px;' data-path='"+attach.uploadPath+"' data-uuid='"+attach.uuid+"' data-fileName='"+attach.fileName+"' data-type='"+attach.fileType+"'>";
+		               	str+="	<div>";
+		               	str+="		<span>"+attach.fileName+"</span><br>";
+		               	//str+="		<button type='button' type='button' data-file='"+fileCallPath+"' data-type='image' class='btn btn-warning btn-circle btn-sm'>";
+		               	//str+="			<i class='fa fa-times'></i>";
+		               	//str+="		</button><br>";
+		               	str+="		<img src='/display?fileName="+fileCallPath+"'>";
+		               	str+="	</div>";
+		               	str+="</li>";
+		           }else{
+		        	   	var fileCallPath=encodeURIComponent(attach.uploadPath+"/"+attach.uuid+"_"+attach.fileName);
+		        	   	var fileLink = fileCallPath.replace(new RegExp(/\\/g),"/");
+			        	   
+		        	   	str+="<li style='cursor:pointer; margin-right:10px;' data-path='"+attach.uploadPath+"' data-uuid='"+attach.uuid+"' data-fileName='"+attach.fileName+"' data-type='"+attach.fileType+"'>";
+		               	str+="	<div>";
+		               	str+="		<span>"+attach.fileName+"</span><br>";
+		               	//str+="		<button type='button' type='button' type='button' data-file='"+fileCallPath+"' data-type='file' class='btn btn-warning btn-circle btn-sm'>";
+		               	//str+="			<i class='fa fa-times' style='color:black;'></i>";
+		               	//str+="		</button><br>";
+		               	str+="		<img src='/resources/img/attach.png'>";
+		               	str+="	</div>";
+						str+="</li>";
+		           }
+				});
+				$(".uploadResult ul").html(str);
+				
+			}); // End getJSON
+		})(); // End function
+		
+		
 		var pageNum=1;
 		var replyPageFooter = $(".card-footer");
 		// 댓글 페이징 시작
@@ -170,7 +311,7 @@
 				str +="     <a class='page-link' href='"+(endNum + 1)+"'>Next</a>";
 				str +="  </li>";
 			}
-				str +="<ul></div>";
+				str +="<ul>";
 				replyPageFooter.html(str);
 		}
 		
