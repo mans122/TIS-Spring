@@ -19,24 +19,23 @@
 
 .uploadResult ul li span{color:white;}
 .bigPictureWrapper {
-position : absolute;
+position : fixed;
 display:none;
 justify-content:center;
 align-items: center;
 top: 0%;
 width: 100%;
 height: 100%;
-background-color: gray !important;
 z-index: 100;
-background:rgba(255,255,255,0.5);
+background:rgba(0,0,0,0.8);
 }
 .bigPicture{
-position: relative;
 display:flex;
 justify-content: center;
 align-items:center;
 }		
 .bigPicture img{
+margin: 0 auto;
 width:1000px;
 }
 </style>
@@ -220,7 +219,8 @@ width:1000px;
 			$(".bigPictureWrapper").css("display","flex").css("position","fix").css("top","0px").css("left","0px").show();
 			$(".bigPicture").html("<img src='/display?fileName="+fileCallPath+"'>").animate({width:'100%',height:'100%'},1000);
 			$(".navbar-nav").hide();
-			$(".container-fluid").hide();
+			$("body").css("overflow","hidden");
+			//$(".container-fluid").hide();
 		};
 		
 		$(".bigPictureWrapper").on("click",function(e){
@@ -228,7 +228,8 @@ width:1000px;
 			setTimeout(function(){
 				$('.bigPictureWrapper').hide();
 				$(".navbar-nav").show();
-				$(".container-fluid").show();
+				$("body").css("overflow","auto");
+				//$(".container-fluid").show();
 			},1000);
 		});
 		// 첨부파일 클릭 이벤트 끝

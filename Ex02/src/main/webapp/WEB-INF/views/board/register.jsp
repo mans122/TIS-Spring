@@ -150,6 +150,8 @@ $(document).ready(function(e){
 	});
 	// Submit 버튼 클릭 끝
 	
+	
+	// 업로드 처리
 	$("input[type='file']").change(function(e){
 		var formData = new FormData();
 		var inputFile = $("input[name='uploadFile']");

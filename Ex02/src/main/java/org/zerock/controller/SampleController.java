@@ -10,6 +10,7 @@ import java.util.stream.IntStream;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,8 +19,8 @@ import org.zerock.domain.SampleVO;
 
 import lombok.extern.log4j.Log4j;
 
-@RestController
 @RequestMapping("/sample")
+@Controller
 @Log4j
 public class SampleController {
 	@GetMapping(value = "/getText",produces = "text/plain; charset=UTF-8")
@@ -27,6 +28,22 @@ public class SampleController {
 		log.info("MIME TYPE: "+MediaType.TEXT_PLAIN_VALUE);
 		return "안녕하세요";
 	}
+	
+	@GetMapping("/all")
+	public void doAll(){
+		log.info("every");
+	}
+	
+	@GetMapping("/admin")
+	public void doAdmin(){
+		log.info("every");	
+		}
+	
+	@GetMapping("/member")
+	public void doMember(){
+		log.info("every");
+		}
+	
 	
 //	@GetMapping(value= "/getSample",
 //			produces= {MediaType.APPLICATION_JSON_UTF8_VALUE,
@@ -80,4 +97,7 @@ public class SampleController {
 		
 		return new String[] {"category: " +cat,"productid: "+pid};
 	}
+	
+	
+
 }
