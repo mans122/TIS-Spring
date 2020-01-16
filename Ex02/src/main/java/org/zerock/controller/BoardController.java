@@ -10,6 +10,7 @@ import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -55,9 +56,11 @@ public class BoardController {
 	
 	//글쓰기 화면
 	@GetMapping("/register")
+	@PreAuthorize("isAuthenticated()")
 	public void register() {}
 	
 	@PostMapping("/register")
+	@PreAuthorize("isAuthenticated()")
 	public String register(BoardVO board,RedirectAttributes rttr) {
 		log.info("--------------------------------------------------------------");
 		log.info("register: "+board);
@@ -71,12 +74,19 @@ public class BoardController {
 	}
 	
 	//상세보기, 수정
-	@GetMapping({"/get","/modify"})
+	@GetMapping("/get")
 	public void get(@RequestParam("bno") Long bno, Model model,@ModelAttribute("cri") Criteria cri) {
 		model.addAttribute("board",service.get(bno));
 	}
 	
+	@PreAuthorize("principal.username == #writer")
+	@GetMapping("/modify")
+	public void modify(@RequestParam("bno") Long bno, Model model,@ModelAttribute("cri") Criteria cri,String writer) {
+		model.addAttribute("board",service.get(bno));
+	}
+	
 	//수정
+	@PreAuthorize("principal.username == #board.writer")
 	@PostMapping("/modify")
 	public String modify(BoardVO board, RedirectAttributes rttr, @ModelAttribute("cri") Criteria cri) {
 		if(service.modify(board)) {
@@ -91,8 +101,9 @@ public class BoardController {
 	}
 	
 	//삭제
+	@PreAuthorize("principal.username == #writer")
 	@PostMapping("/remove")
-	public String remove(@RequestParam("bno") Long bno,RedirectAttributes rttr,@ModelAttribute("cri") Criteria cri) {
+	public String remove(@RequestParam("bno") Long bno,RedirectAttributes rttr,@ModelAttribute("cri") Criteria cri, String writer) {
 		List<BoardAttachVO> attachList = service.getAttachList(bno);
 		if(service.remove(bno)) {
 			// 첨부파일 삭제

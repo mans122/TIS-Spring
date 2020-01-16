@@ -32,4 +32,9 @@ public class CommonController {
 	public void logoutGET() {
 		log.info("custom logout");
 	}
+	
+	@GetMapping("/all")
+	public void all() {
+		
+	}
 }

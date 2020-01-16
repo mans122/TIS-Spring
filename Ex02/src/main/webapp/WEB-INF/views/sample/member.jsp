@@ -8,5 +8,6 @@
 </head>
 <body>
 member
+<a href="/customLogout">Logout</a>
 </body>
 </html>

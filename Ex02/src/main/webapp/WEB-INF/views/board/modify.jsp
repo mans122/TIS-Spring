@@ -2,6 +2,7 @@
 	pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+<%@ taglib uri="http://www.springframework.org/security/tags" prefix="sec" %>
 
 <%@include file="../includes/header.jsp"%>
 <style>
@@ -56,7 +57,7 @@ width:1000px;
 			<div class="card-header py-3">
 				<h4 class="m-0 font-weight-bold text-primary">Modify</h4>
 			</div>
-			
+			<input type="hidden" name="${_csrf.parameterName }" value="${_csrf.token }" />
 			<input type="hidden" name="pageNum"	value="${cri.pageNum}"> 
 			<input type="hidden" name="amount" value="${cri.amount}">
 			<input type="hidden" name="type" value="${cri.type}">
@@ -102,9 +103,14 @@ width:1000px;
 					</div>
 				</div>
 				<!-- 첨부파일 End -------------->
-
-				<button type="submit" data-oper='modify' class="btn btn-outline-primary btn-sm">Modify</button>
-				<button type="submit" data-oper='remove' class="btn btn-outline-danger btn-sm">Remove</button>
+				<sec:authentication property="principal" var="pinfo"/>
+					<sec:authorize access="isAuthenticated()">
+						<c:if test="${pinfo.username eq board.writer }">
+							<button type="submit" data-oper='modify' class="btn btn-outline-primary btn-sm">Modify</button>
+							<button type="submit" data-oper='remove' class="btn btn-outline-danger btn-sm">Remove</button>
+						</c:if>
+					</sec:authorize>
+				
 				<button type="submit" data-oper='list' class="btn btn-outline-info btn-sm">List</button>
 			</div>
 		</div>
@@ -117,6 +123,8 @@ width:1000px;
 <%@include file="../includes/footer.jsp"%>
 <script>
 	$(document).ready(function(){
+		var csrfHeaderName="${_csrf.headerName}";
+		var csrfTokenValue="${_csrf.token}";
 		
 		//업로드 파일 확장자 필터링
 		var regex = new RegExp("(.*?)\.(exe|sh|zip|alz)$"); //정규식
@@ -157,6 +165,9 @@ width:1000px;
 				contentType:false,
 				data:formData,
 				type:'POST',
+				beforeSend: function(xhr){
+					xhr.setRequestHeader(csrfHeaderName, csrfTokenValue);
+				},
 				dataType:'json',
 				success:function(result){
 					console.log(result);

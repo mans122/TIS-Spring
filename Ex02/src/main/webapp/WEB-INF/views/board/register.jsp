@@ -3,6 +3,7 @@
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+<%@ taglib uri="http://www.springframework.org/security/tags" prefix="sec" %>
 
 <%@include file="../includes/header.jsp"%>
 
@@ -23,6 +24,7 @@
 
 		<div class="card-body">
 			<form role="form" action="/board/register" method="post">
+				<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token }">
 				<div class="form-group">
 					<label>Title</label> <input class="form-control" name='title'>
 				</div>
@@ -33,7 +35,8 @@
 				</div>
 
 				<div class="form-group">
-					<label>Writer</label> <input class="form-control" name='writer'>
+					<label>Writer</label> <input class="form-control" name='writer'
+					value=<sec:authentication property="principal.username"/> readonly="readonly">
 				</div>
 				
 				<!-- 첨부 파일 -->
@@ -113,6 +116,8 @@ width:600px;
 </style>
 <script>
 $(document).ready(function(e){
+	var csrfHeaderName="${_csrf.headerName}";
+	var csrfTokenValue="${_csrf.token}";
 	
 	//업로드파일 확장자 필터링
 	var regex=new RegExp("(.*?)\.(exe|sh|zip|alz)$");//정규식
@@ -166,6 +171,9 @@ $(document).ready(function(e){
 			url:'/uploadAjaxAction',
 			processData:false,
 			contentType:false,
+			beforeSend: function(xhr){
+				xhr.setRequestHeader(csrfHeaderName, csrfTokenValue);
+			},
 			data:formData,
 			type:'POST',
 			dataType:'json',
@@ -236,6 +244,9 @@ $(document).ready(function(e){
 		$.ajax({
 			url: '/deleteFile',
 			data: {fileName: targetFile, type:type},
+			beforeSend: function(xhr){
+				xhr.setRequestHeader(csrfHeaderName, csrfTokenValue);
+			},
 			dataType:'text',
 			type:'POST',
 			success:function(result){

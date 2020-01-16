@@ -2,6 +2,7 @@
 	pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+<%@ taglib uri="http://www.springframework.org/security/tags" prefix="sec" %>
 
 <%@include file="../includes/header.jsp"%>
 
@@ -78,13 +79,12 @@ width:1000px;
 			</div>
 
 			<form id='operForm' action="/board/modify" method="get">
-				<input type="hidden" name="bno" value="${board.bno}"> <input
-					type="hidden" name="pageNum"
-					value='<c:out value="${cri.pageNum}"/>'> <input
-					type="hidden" name="amount" value='<c:out value="${cri.amount}"/>'>
-				<input type="hidden" name="type"
-					value='<c:out value="${cri.type}"/>'> <input type="hidden"
-					name="keyword" value='<c:out value="${cri.keyword}"/>'>
+				<input type="hidden" name="bno" value="${board.bno}"> 
+				<input type="hidden" name="pageNum"	value='<c:out value="${cri.pageNum}"/>'> 
+				<input type="hidden" name="amount" value='<c:out value="${cri.amount}"/>'>
+				<input type="hidden" name="type"	value='<c:out value="${cri.type}"/>'> 
+				<input type="hidden" name="keyword" value='<c:out value="${cri.keyword}"/>'>
+				<input type="hidden" name="writer" value='<c:out value="${board.writer}"/>'>
 
 
 				<!-- 첨부 파일 ------------------------------------------------------>
@@ -112,16 +112,16 @@ width:1000px;
 				</div>
 				<!-- End board attach -->
 
-
-
-
-				<button data-oper='modify' class="btn btn-outline-primary btn-sm">Modify</button>
+				<sec:authentication property="principal" var="pinfo"/>
+					<sec:authorize access="isAuthenticated()">
+						<c:if test="${pinfo.username eq board.writer }">
+							<button data-oper='modify' class="btn btn-outline-primary btn-sm">Modify</button>
+							<button data-oper='remove' class="btn btn-outline-danger btn-sm" id="remove">Remove</button>
+						</c:if>
+					</sec:authorize>
+					
 				<button data-oper='list' class="btn btn-outline-primary btn-sm">List</button>
 			</form>
-			<%-- <button data-oper='modify' class="btn btn-outline-primary btn-sm" onclick="location.href='/board/modify?bno=<c:out value="${board.bno}"/>'">Modify</button> --%>
-			<button data-oper='remove' class="btn btn-outline-danger btn-sm"
-				id="remove">Remove</button>
-			<!-- <button data-oper='list' class="btn btn-outline-primary btn-sm"	onclick="location.href='/board/list'">List</button> -->
 		</div>
 		<!-- card body 끝 -->
 	</div>
@@ -133,8 +133,9 @@ width:1000px;
 <div class="card mb-4">
 	<div class="card-header py-3">
 		<i class="fa fa-comments fa-fw"></i>Reply
-		<button id="addReplyBtn" class="btn btn-primary btn-sm float-right">New
-			Reply</button>
+		<sec:authorize access="isAuthenticated()">
+			<button id="addReplyBtn" class="btn btn-primary btn-sm float-right">New	Reply</button>
+		</sec:authorize>
 	</div>
 	<div class="card-body">
 		<ul class="chat list-group">
@@ -163,13 +164,12 @@ width:1000px;
 			<!-- modal body -->
 			<div class="modal-body">
 				<div class="form-group">
-					<label>Reply</label> <input class="form-control" name='reply'
-						value='new Reply!!!!'>
+					<label>Reply</label> <input class="form-control" name='reply'>
 				</div>
 
 				<div class="form-group">
 					<label>Replyer</label> <input class="form-control" name='replyer'
-						value='replyer'>
+						 readonly='readonly'>
 				</div>
 
 				<div class="form-group">
@@ -181,14 +181,11 @@ width:1000px;
 
 			<!-- modal footer -->
 			<div class="modal-footer">
-				<button id='modalModBtn' type="button"
-					class="btn btn-warning btn-sm">Modify</button>
-				<button id='modalRemoveBtn' type="button"
-					class="btn btn-danger btn-sm">Remove</button>
-				<button id='modalRegisterBtn' type="button"
-					class="btn btn-primary btn-sm">Register</button>
-				<button id='modalCloseBtn' type="button"
-					class="btn btn-default btn-sm">Close</button>
+					
+				<button id='modalModBtn' type="button"	class="btn btn-warning btn-sm">Modify</button>
+				<button id='modalRemoveBtn' type="button" class="btn btn-danger btn-sm">Remove</button>
+				<button id='modalRegisterBtn' type="button"	class="btn btn-primary btn-sm">Register</button>
+				<button id='modalCloseBtn' type="button" class="btn btn-default btn-sm">Close</button>
 			</div>
 		</div>
 		<!-- modal-content 끝 -->
@@ -202,6 +199,7 @@ width:1000px;
 <script src="/resources/js/reply.js"></script>
 <script>
 	$(document).ready(function() {
+
 		// 첨부파일 클릭 이벤트 처리
 		$(".uploadResult").on("click","li",function(){
 			console.log("view image");
@@ -230,7 +228,7 @@ width:1000px;
 				$(".navbar-nav").show();
 				$("body").css("overflow","auto");
 				//$(".container-fluid").show();
-			},1000);
+			},100);
 		});
 		// 첨부파일 클릭 이벤트 끝
 		
@@ -366,7 +364,7 @@ width:1000px;
 
 		var modalModBtn = $("#modalModBtn");
 		var modalRemoveBtn = $("#modalRemoveBtn");
-		var modalRegisterBtn = $("#modalRegisterBtn");
+		var modalRegisterBtn = $("#modalRegisterBtn"); 
 		
 		//댓글 클릭 이벤트 처리
 		$(".chat").on("click","li",function(e){
@@ -382,12 +380,58 @@ width:1000px;
 				modalModBtn.show();
 				modalRemoveBtn.show();
 				$("#myModal").modal("show");
+				
 			})
+		});
+		
+
+		var modal = $(".modal");
+		var modalInputReply = modal.find("input[name='reply']");
+		var modalInputReplyer = modal.find("input[name='replyer']");
+		var modalInputReplyDate = modal.find("input[name='replyDate']");
+		
+		var modalModbtn = $("#modalModBtn");
+		var modalRemoveBtn = $("#modalRemoveBtn");
+		var modalRegisterBtn = $("#modalRegisterBtn");
+		
+		var replyer = null;
+		<sec:authorize access="isAuthenticated()">
+			replyer = '<sec:authentication property="principal.username"/>';
+		</sec:authorize>
+		
+		var csrfHeaderName="${_csrf.headerName}";
+		var csrfTokenValue="${_csrf.token}";
+		
+		//Ajax Spring security header
+		$(document).ajaxSend(function(e, xhr, options){
+			xhr.setRequestHeader(csrfHeaderName, csrfTokenValue);
+		});
+		
+		// 댓글추가 버튼 
+		$("#addReplyBtn").on("click", function(e) {
+			modal.find("input").val("");
+			modal.find("input[name='replyer']").val(replyer);
+			modal.find("button[id !='modalCloseBtn']").hide();
+			modalInputReplyDate.closest("div").hide();
+			//modalInputReplyer.removeAttr("readonly");
+			modalRegisterBtn.show();
+			$("#myModal").modal("show");
 		});
 		
 		//댓글 수정 버튼 처리
 		modalModBtn.on("click",function(e){
-			var reply = {rno:modal.data("rno"), reply:modalInputReply.val()};
+			var originalReplyer = modalInputReplyer.val();
+			var reply = {rno:modal.data("rno"), reply:modalInputReply.val(),replyer:originalReplyer};
+			if(!replyer){
+				alert("로그인 후 수정 가능합니다.");
+				modal.modal("hide");
+				return;
+			}
+			if(replyer != originalReplyer){
+				alert("자신이 작성한 댓글만 수정 가능합니다.");
+				modal.modal("hide");
+				return;
+			}
 			
 			replyService.update(reply,function(result){
 				alert(result);
@@ -399,9 +443,22 @@ width:1000px;
 		//댓글 삭제버튼
 		modalRemoveBtn.on("click",function(e){
 			var rno = modal.data("rno");
+			
+			if(!replyer){
+				alert("로그인 후 삭제 가능합니다.");
+				modal.modal("hide");
+				return;
+			}
+			var originalReplyer = modalInputReplyer.val();
+			if(replyer != originalReplyer){
+				alert("자신이 작성한 댓글만 삭제가 가능합니다.");
+				modal.modal("hide");
+				return;
+			}
+			
 			var result = confirm("정말 삭제하시겠습니까?");
 			if(result){
-				replyService.remove(rno, function(result){
+				replyService.remove(rno, originalReplyer, function(result){
 					alert(result);
 					modal.modal("hide");
 					showList(pageNum);
@@ -410,18 +467,6 @@ width:1000px;
 				return;
 			}
 		});
-		
-		// 댓글추가 버튼 
-		$("#addReplyBtn").on("click", function(e) {
-			modal.find("input").val("");
-			modalInputReplyDate.closest("div").hide();
-			modal.find("button[id !='modalCloseBtn']").hide();
-			modalInputReplyer.removeAttr("readonly");
-			modalRegisterBtn.show();
-			$("#myModal").modal("show");
-			
-		});
-		
 		
 		
 		//Register 버튼 클릭
@@ -444,7 +489,7 @@ width:1000px;
 		});
 		
 		
-	/* 삭제 확인 */
+	/* 게시글 삭제 확인 */
 	$("#remove").click(function(){
 		var result = confirm("정말 삭제하시겠습니까?");
 		if(result){

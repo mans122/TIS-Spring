@@ -16,24 +16,17 @@
         
         <!-- card-body start ------------------------->
         <div class="card-body">
-        
-		 	<!-- form start  --------------->
-			<form method='post' action="/login">
-				<div class='form-group'><input class='form-control' placeholder='ID' type='text' name='username'></div>
-				<div class='form-group'><input class='form-control' placeholder='Password' type='password' name='password'></div>
-				<div class='form-group'><input type='checkbox' name='remember-me'> 자동로그인</div>
-				<div class='form-group'><input class='form-control' type='submit' value="로그인"></div>
-				<input type="hidden" name="${_csrf.parameterName }" value="${_csrf.token}"/>
+			<form action="/customLogout" method='post'>
+				<h4 style='text-align:center;'>로그아웃 하시겠습니까?</h4>
+				<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token }"/>
+				
+				<button class="btn btn-primary btn-sm form-control">로그아웃</button>
 			</form>
-			<!-- form end -->
-			
 		</div>
 		<!-- card-body end -->
 		
 		<!-- card-footer start ------------------------->
 		<div class="card-footer">
-			<h4><c:out value="${error }"/></h4>
-			<h4><c:out value="${logout }"/></h4>
 		</div>
 		<!-- card-footer end -->
 		
@@ -41,14 +34,3 @@
 	<!-- Card End -->
 </div>
 <%@ include file="./includes/footer.jsp" %>
-<c:if test="${param.logout !=null }">
-	<script>
-	$(document).ready(function(){
-		if(history.state){
-			return;
-		}
-		alert("로그아웃 하였습니다.");
-		history.replaceState({},null,null,);
-	});
-	</script>
-</c:if>
