@@ -48,7 +48,7 @@
 			return;
 		}
 		alert("로그아웃 하였습니다.");
-		history.replaceState({},null,null,);
+		history.replaceState({},null,null);
 	});
 	</script>
 </c:if>
