@@ -37,7 +37,7 @@ a.meanmenu-reveal {
 	padding: 0;
 	position: absolute;
 	top: 0;
-	right: 0;
+	right: 20px !important;
 	cursor: pointer;
 	color: #303030;
 	text-decoration: none;

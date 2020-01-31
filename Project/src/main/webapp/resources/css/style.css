@@ -12,7 +12,9 @@
 **********************************************************************************/
 /*******************
 Basic Styles
+
 ********************/
+
 /**
 Reset Styles
 */
@@ -31,7 +33,7 @@ header,
 nav,
 section,
 summary {
-  display: block; }
+  display: block; margin-top:50px}
 
 audio,
 canvas,
@@ -2786,9 +2788,10 @@ Header Styles
   animation: crSlideInDown 0.5s ease-out 0s 1 backwards; }
   .sticky-header.is-sticky.bg-white {
     box-shadow: 0 3px 3px rgba(0, 0, 0, 0.1); }
-  .sticky-header.is-sticky .mainmenu > ul > li > a {
+  /* .sticky-header.is-sticky .mainmenu > ul > li > a {
     padding-top: 22px;
-    padding-bottom: 22px; }
+    padding-bottom: 22px; 
+     } */
   .sticky-header.is-sticky .header-buttons ul li {
     padding-top: 16px;
     padding-bottom: 16px; }

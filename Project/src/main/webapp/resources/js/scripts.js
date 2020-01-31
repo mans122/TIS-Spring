@@ -23,7 +23,9 @@
 
 (function($) {
 	'use strict';
+	/* window resize */
 
+	
 	/* Scroll Scripts */
 	$(window).on('scroll', function() {
 		function winScrollPosition() {
@@ -53,10 +55,14 @@
 			$('.sticky-header').addClass('is-sticky');
 			$('.logo-box').addClass('sticky-logo-box');
 			$('.mainmenu').addClass('sticky-mainmenu');
+			$('.topmenu').css("display","none");
+			$('.nav-bar').css("top","30%");
 		} else {
 			$('.sticky-header').removeClass('is-sticky');
 			$('.logo-box').removeClass('sticky-logo-box');
 			$('.mainmenu').removeClass('sticky-mainmenu');
+			$('.topmenu').css("display","block");
+			$('.nav-bar').css("top","25%");
 		}
 	});
 
@@ -142,4 +148,6 @@
 	menuLastElement();
 
 	/* Sticky Header */
+	
+//	jquery 끝
 })(jQuery);

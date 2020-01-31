@@ -32,6 +32,7 @@
 			users-by-username-query="select userid, userpw, enabled from tbl_member where userid=?" 
 			authorities-by-username-query="select userid, auth from tbl_member_auth where userid=?"/>-->
 		<security:password-encoder ref="bcryptPasswordEncoder"/>
+		
 	</security:authentication-provider>
 </security:authentication-manager>
 
